@@ -1,20 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  FlatList, ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Platform,
-  Layout, StatusBar
+  FlatList, ScrollView, View, Text,
+  StyleSheet, TextInput, TouchableOpacity,
+  Platform, StatusBar
 } from 'react-native';
-import { useState, useEffect } from 'react';
 import { SkillCard } from '../components/SkillCard';
 import { Button } from '../components/Button';
+
+interface ISkillData {
+  id: string;
+  name: string;
+}
 
 export function Home() {
   const [totalSkills, setTotalSkills] = useState(0);
   const [newSkill, setNewSkill] = useState('');
-  const [mySkills, setMySkills] = useState([]);
+  const [mySkills, setMySkills] = useState<ISkillData[]>([]);
   const [greeting, setGreeting] = useState('');
 
   function handleAddNewSkill() {
-    setMySkills(oldState => [...oldState, newSkill]);
+    const data = {
+      id: String(new Date().getTime()),
+      name: newSkill
+    };
+    setMySkills(oldState => [...oldState, data]);
+  }
+
+  function handleRemoveSkill(id: string) {
+    setMySkills((oldState) => oldState.filter(skill => skill.id !== id));
   }
 
   useEffect(() => {
@@ -28,7 +41,6 @@ export function Home() {
     }
 
   }, []);
-
 
   useEffect(() => {
     setTotalSkills(oldState => mySkills.length);
@@ -50,7 +62,7 @@ export function Home() {
         onChangeText={setNewSkill}
       />
 
-      <Button onPress={handleAddNewSkill} />
+      <Button name="Add" onPress={handleAddNewSkill} />
 
       <View style={{
         marginTop: 30, marginBottom: 30,
@@ -69,9 +81,12 @@ export function Home() {
         contentContainerStyle={{ paddingBottom: 20 }}
         style={{ flexDirection: "column" }}
         data={mySkills}
-        keyExtractor={(item, index) => index}
+        keyExtractor={(item, index) => item.id}
         renderItem={({ item, index }) => (
-          <SkillCard skill={item} />
+          <SkillCard
+            skill={item.name}
+            onPress={() => handleRemoveSkill(item.id)}
+          />
         )}
       />
 
