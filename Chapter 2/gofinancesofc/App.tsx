@@ -1,6 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 
+import 'intl';
+import 'intl/locale-data/jsonp/pt-BR';
+
 import {
   useFonts,
   Poppins_400Regular,
@@ -13,8 +16,12 @@ import theme from './src/global/styles/theme';
 import { NavigationContainer } from '@react-navigation/native';
 import { AppRoutes } from './src/routes/app.routes';
 
+import { StatusBar } from 'react-native';
+
 import AppLoading from 'expo-app-loading';
-import { Register } from './src/screens/Register';
+
+import { RefreshProvider, RefreshContext } from './src/providers/RefreshTransactions';
+
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -28,10 +35,16 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <NavigationContainer>
-        <AppRoutes />
-      </NavigationContainer>
-    </ThemeProvider>
+    <RefreshProvider value={{ toRefresh: false }}>
+
+      <ThemeProvider theme={theme}>
+        <NavigationContainer>
+          <StatusBar barStyle='light-content' />
+
+          <AppRoutes />
+        </NavigationContainer>
+      </ThemeProvider>
+
+    </RefreshProvider>
   );
 }

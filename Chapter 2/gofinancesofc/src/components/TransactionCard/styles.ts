@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import { Feather } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { GestureHandlerRootView, BorderlessButton, RectButton } from 'react-native-gesture-handler';
 
 interface ITransactionType {
   type: 'positive' | 'negative';
@@ -13,10 +14,19 @@ export const Container = styled.View`
   padding:17px 24px;
   margin-bottom:16px;
 `;
+
+export const Header = styled(GestureHandlerRootView)`
+  flex-direction:row;
+  justify-content:space-between;
+`;
+
 export const Title = styled.Text`
   font-family:${({ theme }) => theme.fonts.regular};
   font-size:${RFValue(14)}px;
 
+`;
+export const ButtonDelete = styled(BorderlessButton)`
+  padding:4px;
 `;
 
 export const Amount = styled.Text<ITransactionType>`
