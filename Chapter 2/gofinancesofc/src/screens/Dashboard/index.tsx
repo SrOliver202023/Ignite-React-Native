@@ -18,6 +18,8 @@ import { TransactionCard, ITransactionCardProps } from '../../components/Transac
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from 'styled-components/native';
 
+import { useAuth } from '../../hooks/auth';
+
 export interface IDataListProps extends ITransactionCardProps {
   id: string;
 }
@@ -25,7 +27,7 @@ export interface IDataListProps extends ITransactionCardProps {
 import { IRefreshContext } from '../../providers/RefreshTransactions';
 import { ActivityIndicator } from 'react-native';
 
-const dataKey = '@gofinances:transactions';
+
 
 interface IHilightProps {
   amount: string;
@@ -43,12 +45,23 @@ export function Dashboard(props: IRefreshContext) {
   const [refresh, setRefresh] = useState(false);
   const [highlightData, setHighlightData] = useState<IHighlightData>({} as IHighlightData);
 
+  const dateError = new Date(0);
+
+  const { signOut, user } = useAuth();
+
   const theme = useTheme();
+
+  const dataKey = `@gofinances:transactions_user:${user.id}`;
 
   function getLastTransaction(collection: IDataListProps[], type: 'positive' | 'negative', orderByDate: 'first' | 'last'): Date {
 
-    const filterTransactions = collection
-      .filter((transaction: IDataListProps) => transaction.type === type)
+    const collectionFilttered = collection
+      .filter((transaction: IDataListProps) => transaction.type === type);
+
+    console.log(collectionFilttered);
+    if (collectionFilttered.length === 0) return dateError;
+
+    const filterTransactions = collectionFilttered
       .map((transaction: IDataListProps) => new Date(transaction.date).getTime());
 
     const orderBy = orderByDate === 'last' ? Math.max.apply(Math, filterTransactions) : Math.min.apply(Math, filterTransactions);
@@ -99,7 +112,6 @@ export function Dashboard(props: IRefreshContext) {
 
     const lastTransactionsEntries = getLastTransaction(transactions, 'positive', 'last');
     const lastTransactionsEntriesFormatted = `${lastTransactionsEntries.getDate()} de ${lastTransactionsEntries.toLocaleString('pt-BR', { month: 'long' })}`;
-
     const lastTransactionsExpesives = getLastTransaction(transactions, 'negative', 'last');
     const lastTransactionsExpesivesFormatted = `${lastTransactionsExpesives.getDate()} de ${lastTransactionsExpesives.toLocaleString('pt-BR', { month: 'long' })}`;
 
@@ -107,27 +119,35 @@ export function Dashboard(props: IRefreshContext) {
     const expensiveTotalAjust = expensiveTotal ? expensiveTotal : 0;
     const totalAjust = entriesTotal - expensiveTotal ? entriesTotal - expensiveTotal : 0;
 
+    console.log(lastTransactionsEntries === dateError);
+
     setHighlightData({
       entries: {
         amount: entriesTotalAjust.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
         }),
-        lastTransaction: `Última entrada dia ${lastTransactionsEntriesFormatted}`
+        lastTransaction: lastTransactionsEntries === dateError
+          ? "Não há transações"
+          : `Última entrada dia ${lastTransactionsEntriesFormatted}`
       },
       expensives: {
         amount: expensiveTotalAjust.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL'
         }),
-        lastTransaction: `Última entrada dia ${lastTransactionsExpesivesFormatted}`
+        lastTransaction: lastTransactionsExpesives === dateError
+          ? "Não há transações"
+          : `Última entrada dia ${lastTransactionsExpesivesFormatted}`
       },
       total: {
         amount: totalAjust.toLocaleString('pt-BR', {
           style: 'currency',
           currency: 'BRL',
         }),
-        lastTransaction: `1 a ${lastTransactionsExpesivesFormatted}`
+        lastTransaction: lastTransactionsExpesives === dateError && lastTransactionsEntries === dateError
+          ? "Não há transações"
+          : lastTransactionsExpesivesFormatted
       },
     });
     setIsLoading(false);
@@ -171,14 +191,14 @@ export function Dashboard(props: IRefreshContext) {
             <Header>
               <UserWrapper>
                 <UserInfo>
-                  <Photo source={{ uri: "https://avatars.githubusercontent.com/u/69410605?v=4" }} />
+                  <Photo source={{ uri: user.photo }} />
                   <User>
                     <UserGreeting>Olá, </UserGreeting>
-                    <UserName>Emmerson</UserName>
+                    <UserName>{user.name.split(" ")[0]}</UserName>
                   </User>
                 </UserInfo>
                 <LogoutButton
-                  onPress={() => { }}
+                  onPress={signOut}
                 >
                   <Icon name="power" />
                 </LogoutButton>

@@ -29,6 +29,7 @@ import {
 } from './styles';
 
 import { CategorySelect } from '../CategorySelect';
+import { useAuth } from '../../hooks/auth';
 
 interface FormData extends UseFormHandleSubmit<FieldValues> {
   name: string;
@@ -38,7 +39,6 @@ interface FormData extends UseFormHandleSubmit<FieldValues> {
 
 type NavigationProps = { navigate: (screen: string) => void; };
 
-const dataKey = '@gofinances:transactions';
 
 const schema = Yup.object().shape({
   name: Yup
@@ -59,6 +59,11 @@ export function Register() {
     key: 'category',
     name: 'Categoria',
   });
+
+  const { user } = useAuth();
+
+  const dataKey = `@gofinances:transactions_user:${user.id}`;
+
 
   const navigation = useNavigation<NavigationProps>();
 

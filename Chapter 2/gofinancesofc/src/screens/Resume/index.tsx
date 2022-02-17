@@ -37,6 +37,7 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 
 import { VictoryPie } from 'victory-native';
+import { useAuth } from '../../hooks/auth';
 
 interface ITransactionData {
   // id: string;
@@ -62,6 +63,7 @@ export function Resume() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<ICategoryData[]>([]);
 
+  const { user } = useAuth();
   const theme = useTheme();
 
   async function handleDateChange(action: 'next' | 'prev') {
@@ -75,7 +77,7 @@ export function Resume() {
 
 
   async function loadData() {
-    const dataKey = '@gofinances:transactions';
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted: [] = response ? JSON.parse(response) : [];
 
