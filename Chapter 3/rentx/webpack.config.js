@@ -10,7 +10,7 @@ module.exports = {
     filename: "bundle.js",
   },
   resolve: {
-    extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
+    extensions: [".js", ".jsx", ".json", ".ts", ".tsx", ".svg"],
   },
   module: {
     rules: [
@@ -27,6 +27,14 @@ module.exports = {
         test: /\.css$/,
         loader: "css-loader",
       },
+      {
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'react-native-svg-loader',
+          },
+        ]
+      }
     ],
   },
   plugins: [

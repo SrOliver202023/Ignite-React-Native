@@ -33,12 +33,11 @@ export function Button({
       }}
       onPress={onPress}
       enabled={enabled}
+      {...rest}
     >
       {loading ? <ActivityIndicator color={theme.colors.shape} /> :
         <Title>{title}</Title>
       }
-
-
     </Container>
   );
 }
