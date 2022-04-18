@@ -3,15 +3,14 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components';
 
 export const Container = styled(View)`
-  width:${RFValue(109)}px;
-  height:${RFValue(92)}px;
+  width:${RFValue(109 - 5)}px;
+  height:${RFValue(92 - 5)}px;
   
   justify-content:center;
   align-items:center;
 
   background-color:${({ theme }) => theme.colors.background_primary};
 
-  padding:16px;
   margin-bottom:8px;
 `;
 

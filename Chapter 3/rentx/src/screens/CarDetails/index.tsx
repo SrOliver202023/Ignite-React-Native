@@ -1,9 +1,16 @@
 import React from 'react';
-import { StatusBar } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
+
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate
+} from 'react-native-reanimated';
 
 import { BackButton } from '../../components/BackButton';
 import { ImageSlider } from '../../components/ImageSlider';
-
 import { Button } from "../../components/Button";
 import {
   Container,
@@ -26,6 +33,9 @@ import { NavigationProp, useRoute } from '@react-navigation/native';
 import { CarDTO } from '../../dtos/car';
 
 import { getAccessoryIcon } from '../../utils/getAccessoryIcon';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import theme from '../../styles/theme';
+import { useTheme } from 'styled-components';
 
 interface RouteParams {
   car: CarDTO;
@@ -33,7 +43,44 @@ interface RouteParams {
 
 export function CarDetails({ navigation }: { navigation: NavigationProp<any>; }) {
   const route = useRoute();
+  const theme = useTheme();
   const { car } = route.params as RouteParams;
+
+  const scrollY = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y;
+
+    console.log(event.contentOffset.y);
+  });
+
+  const headerStyleAnimation = useAnimatedStyle(() => {
+    return {
+      paddingBottom: interpolate(
+        scrollY.value,
+        [0, 10],
+        [0, 78],
+        Extrapolate.CLAMP
+      ),
+      height: interpolate(
+        scrollY.value,
+        [0, 200],
+        [200, 70],
+        Extrapolate.CLAMP
+      )
+    };
+  });
+
+  const sliderCarsStyleAnimation = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(scrollY.value,
+        [0, 150],
+        [1, 0],
+        Extrapolate.CLAMP
+
+      )
+    };
+  });
 
   function handleBackToHome() {
     navigation.goBack();
@@ -49,17 +96,44 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
         backgroundColor="transparent"
         translucent
       />
-      <Header>
-        <BackButton
-          onPress={handleBackToHome}
-        />
-      </Header>
-      <CarImages>
-        <ImageSlider
-          imagesUrl={car.photos}
-        />
-      </CarImages>
-      <Content
+
+      <Animated.View
+        style={[
+          headerStyleAnimation,
+          styles.header,
+          { backgroundColor: theme.colors.background_secondary }
+        ]}
+      >
+        <Header>
+          <BackButton
+            style={[styles.back]}
+            onPress={handleBackToHome}
+          />
+        </Header>
+
+        <Animated.View
+          style={[sliderCarsStyleAnimation]}
+        >
+          <CarImages>
+            <ImageSlider
+              imagesUrl={car.photos}
+            />
+          </CarImages>
+        </Animated.View>
+
+      </Animated.View>
+
+
+      <Animated.ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: 24,
+          alignItems: 'center',
+          paddingTop: getStatusBarHeight() + 160
+        }}
+        showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
+
+        scrollEventThrottle={16}
       >
         <Details>
           <Description>
@@ -86,8 +160,15 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
 
         <About style={{ textAlign: 'justify' }}>
           {car.about}
+          {car.about}
+          {car.about}
+          {car.about}
+          {car.about}
+          {car.about}
+          {car.about}
+          {car.about}
         </About>
-      </Content>
+      </Animated.ScrollView>
 
       <Footer>
         <Button title='Escolher período do aluguel' onPress={handleConfirmRental} />
@@ -97,3 +178,15 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
     </Container>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    position: 'absolute',
+    overflow: 'hidden',
+    zIndex: 1,
+  },
+  back: {
+    marginTop: 24
+  }
+
+});

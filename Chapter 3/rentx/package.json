@@ -7,7 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "json-server": "json-server ./src/services/server.json --host 172.30.235.180 --port 3333 --delay 700",
+    "json-server": "json-server ./src/services/server.json --host 172.22.61.127 --port 3333 --delay 700",
     "build": "next build"
   },
   "dependencies": {
