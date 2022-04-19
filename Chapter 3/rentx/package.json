@@ -7,7 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "json-server": "json-server ./src/services/server.json --host 172.22.52.59 --port 3333 --delay 700",
+    "json-server": "json-server ./src/services/server.json --host $(hostname -I) --port 3333 --delay 700",
     "build": "next build"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "json-server": "^0.17.0",
+    "lottie-react-native": "5.0.1",
     "next": "^12.1.5",
     "react": "17.0.1",
     "react-dom": "^18.0.0",

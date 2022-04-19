@@ -26,7 +26,7 @@ import {
   CarFooterDate,
 
 } from './styles';
-import { Load } from '../../components/Load';
+import { LoadAnimation } from '../../components/LoadAnimation';
 
 export interface CarProps {
   id: string;
@@ -85,7 +85,7 @@ export function MyCars({ navigation }: { navigation: NavigationProp<any>; }) {
 
       </Header>
 
-      {loading ? <Load /> :
+      {loading ? <LoadAnimation /> :
         <Content>
           <Appointments>
             <AppointmentsTitle>Agendamentos feitos</AppointmentsTitle>

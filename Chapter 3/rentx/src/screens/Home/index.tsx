@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, StatusBar, StyleSheet } from "react-native";
+import { Alert, StatusBar, StyleSheet, BackHandler } from "react-native";
 import { RFValue } from 'react-native-responsive-fontsize';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RectButton, PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -29,7 +29,7 @@ import { NavigationProp } from '@react-navigation/native';
 
 import { api } from '../../services/api';
 import { CarDTO } from '../../dtos/car';
-import { Load } from '../../components/Load';
+import { LoadAnimation } from '../../components/LoadAnimation';
 import { useTheme } from 'styled-components';
 
 export function Home({ navigation }: { navigation: NavigationProp<any>; }) {
@@ -87,6 +87,12 @@ export function Home({ navigation }: { navigation: NavigationProp<any>; }) {
       }
     }
     fetchCars();
+  }, []);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      return true;
+    });
 
   }, []);
 
@@ -103,14 +109,18 @@ export function Home({ navigation }: { navigation: NavigationProp<any>; }) {
             width={RFValue(108)}
             height={RFValue(12)}
           />
-          <TotalCars>
-            Total {cars.length === 1 ? `1 carro` : `${cars.length} carros`}
-          </TotalCars>
+
+          {!loading &&
+            <TotalCars>
+              Total {cars.length === 1 ? `1 carro` : `${cars.length} carros`}
+            </TotalCars>
+          }
+
         </HeaderContent>
       </Header>
 
       {
-        loading ? <Load /> :
+        loading ? <LoadAnimation /> :
           <CarsList
             data={cars}
             keyExtractor={(item) => item.id}

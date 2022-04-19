@@ -24,7 +24,12 @@ export function StackRoutes() {
         screenOptions={{ headerShown: false }}
       >
 
-        <Screen name="Home" component={Home} />
+        <Screen name="Home" component={Home}
+          options={{
+            gestureEnabled: false,
+          }}
+
+        />
         <Screen name="Splash" component={Splash} />
         <Screen name="CarDetails" component={CarDetails} />
         <Screen name="MyCars" component={MyCars} />
