@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar, StyleSheet } from "react-native";
 
 import Animated, {
@@ -6,7 +6,12 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
   interpolate,
-  Extrapolate
+  Extrapolate,
+  interpolateColor,
+  interpolateColors,
+  useEvent,
+  useDerivedValue,
+  color
 } from 'react-native-reanimated';
 
 import { BackButton } from '../../components/BackButton';
@@ -34,7 +39,6 @@ import { CarDTO } from '../../dtos/car';
 
 import { getAccessoryIcon } from '../../utils/getAccessoryIcon';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import theme from '../../styles/theme';
 import { useTheme } from 'styled-components';
 
 interface RouteParams {
@@ -45,17 +49,34 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
   const route = useRoute();
   const theme = useTheme();
   const { car } = route.params as RouteParams;
-
   const scrollY = useSharedValue(0);
+
+  const toColor = useDerivedValue(() => {
+    return {
+      background: interpolateColor(
+        scrollY.value,
+        [0, 100],
+        [theme.colors.background_secondary, theme.colors.main]
+      ),
+      font: interpolateColor(
+        scrollY.value,
+        [0, 100],
+        [theme.colors.main, theme.colors.background_secondary]
+      )
+    };
+  });
+
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
-
-    console.log(event.contentOffset.y);
+    console.log();
+    // console.log(event.contentOffset.y);
   });
+
 
   const headerStyleAnimation = useAnimatedStyle(() => {
     return {
+      backgroundColor: toColor.value.background,
       paddingBottom: interpolate(
         scrollY.value,
         [0, 10],
@@ -77,7 +98,6 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
         [0, 150],
         [1, 0],
         Extrapolate.CLAMP
-
       )
     };
   });
@@ -101,7 +121,6 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
         style={[
           headerStyleAnimation,
           styles.header,
-          { backgroundColor: theme.colors.background_secondary }
         ]}
       >
         <Header>
