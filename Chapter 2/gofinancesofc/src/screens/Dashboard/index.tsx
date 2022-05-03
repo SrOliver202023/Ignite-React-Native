@@ -58,7 +58,6 @@ export function Dashboard(props: IRefreshContext) {
     const collectionFilttered = collection
       .filter((transaction: IDataListProps) => transaction.type === type);
 
-    console.log(collectionFilttered);
     if (collectionFilttered.length === 0) return dateError;
 
     const filterTransactions = collectionFilttered
@@ -118,8 +117,6 @@ export function Dashboard(props: IRefreshContext) {
     const entriesTotalAjust = entriesTotal ? entriesTotal : 0;
     const expensiveTotalAjust = expensiveTotal ? expensiveTotal : 0;
     const totalAjust = entriesTotal - expensiveTotal ? entriesTotal - expensiveTotal : 0;
-
-    console.log(lastTransactionsEntries === dateError);
 
     setHighlightData({
       entries: {
