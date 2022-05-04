@@ -12,8 +12,6 @@ import {
 interface ButtonProps extends RectButtonProps {
   title: string;
   color?: string;
-  onPress: () => void;
-  enabled?: boolean;
   loading?: boolean;
   textColor?: string;
 }

@@ -14,6 +14,8 @@ import { ThemeProvider } from "styled-components";
 import { MyCars } from "../screens/MyCars";
 import { SignIn } from "../screens/SignIn";
 
+import { SignUpFirstStep } from '../screens/SignUp/SignUpFirstStep';
+
 const { Navigator, Screen } = createStackNavigator();
 
 
@@ -21,7 +23,7 @@ export function StackRoutes() {
   return (
     <ThemeProvider theme={theme}>
       <Navigator
-        initialRouteName="SignIn"
+        initialRouteName="SignUpFirstStep"
         screenOptions={{ headerShown: false }}
       >
 
@@ -33,6 +35,7 @@ export function StackRoutes() {
         />
         <Screen name="Splash" component={Splash} />
         <Screen name="SignIn" component={SignIn} />
+        <Screen name="SignUpFirstStep" component={SignUpFirstStep} />
         <Screen name="CarDetails" component={CarDetails} />
         <Screen name="MyCars" component={MyCars} />
         <Screen name="Scheduling" component={Scheduling} />
