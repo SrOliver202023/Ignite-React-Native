@@ -6,6 +6,7 @@ import { BackButton } from '../../../components/BackButton';
 import { Bullet } from '../../../components/Bullet';
 import { Button } from '../../../components/Button';
 import { PasswordInput } from '../../../components/PasswordInput';
+import { api } from '../../../services/api';
 
 import { useTheme } from 'styled-components';
 
@@ -42,24 +43,31 @@ export function SignUpSecondStep({ navigation }: { navigation: NavigationProp<an
     navigation.goBack();
   }
 
-  function handleRegister() {
+  async function handleRegister() {
     if (!password || !passwordConfirm) {
       return Alert.alert('Opa', 'Insira uma senha e sua confirmação.');
     }
     if (password !== passwordConfirm) {
       return Alert.alert('Opa', 'As senhas devem ser iguais.');
     }
-    const userToRegiser = { ...user, password };
 
-
-    // API 
-    navigation.navigate('Confirmation', {
-      title: 'Conta Criada!',
-      message: `Agora é só fazer login\ne aproveitar.`,
-      nextScreenRoute: 'SignIn'
+    const { name, driverLicense, email } = user;
+    await api.post('/users', {
+      name,
+      email,
+      driver_license: driverLicense,
+      password
+    }).then(() => {
+      navigation.navigate('Confirmation', {
+        title: 'Conta Criada!',
+        message: `Agora é só fazer login\ne aproveitar.`,
+        nextScreenRoute: 'SignIn'
+      });
+    }).catch((error) => {
+      console.log(error);
+      Alert.alert('Opa', 'Não foi possível cadastrar');
     });
   }
-
 
   return (
     <KeyboardAvoidingView behavior='position' enabled>
