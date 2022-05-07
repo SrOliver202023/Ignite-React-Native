@@ -61,7 +61,7 @@ export function SchedulingDetails({ navigation }: { navigation: NavigationProp<a
   const route = useRoute();
   const { car, dates, rentalPeriod } = route.params as RouteParams;
 
-  const rentalPriceTotal = car.rent.price * dates.length;
+  const rentalPriceTotal = car.price * dates.length;
 
   function handleBackToScheduling() {
     navigation.goBack();
@@ -130,8 +130,8 @@ export function SchedulingDetails({ navigation }: { navigation: NavigationProp<a
             <Name>{car.name}</Name>
           </Description>
           <Rent>
-            <Period>{car.rent.period}</Period>
-            <Price>R$ {car.rent.price}</Price>
+            <Period>{car.period}</Period>
+            <Price>R$ {car.price}</Price>
           </Rent>
         </Details>
         <Accessories>
@@ -173,7 +173,7 @@ export function SchedulingDetails({ navigation }: { navigation: NavigationProp<a
           <RentalPriceLabel>TOTAL</RentalPriceLabel>
           <RentalPriceDetails>
             {/* <RentalPriceQuota>R$ 580 x3 diárias</RentalPriceQuota> */}
-            <RentalPriceQuota>R$ {`${car.rent.price} x${dates.length} diárias`}</RentalPriceQuota>
+            <RentalPriceQuota>R$ {`${car.price} x${dates.length} diárias`}</RentalPriceQuota>
             <RentalPriceTotal>R$ {rentalPriceTotal}</RentalPriceTotal>
           </RentalPriceDetails>
         </RentalPrice>

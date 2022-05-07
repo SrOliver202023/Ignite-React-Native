@@ -64,7 +64,6 @@ export function SignUpSecondStep({ navigation }: { navigation: NavigationProp<an
         nextScreenRoute: 'SignIn'
       });
     }).catch((error) => {
-      console.log(error);
       Alert.alert('Opa', 'Não foi possível cadastrar');
     });
   }

@@ -49,7 +49,7 @@ export function Splash({ navigation }: { navigation: NavigationProp<any>; }) {
   });
 
   function startApp() {
-    navigation.navigate('Home');
+    navigation.navigate('SignIn');
   }
 
   useEffect(() => {

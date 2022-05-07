@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StatusBar, StyleSheet } from "react-native";
 
 import Animated, {
@@ -69,8 +69,6 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
 
   const scrollHandler = useAnimatedScrollHandler((event) => {
     scrollY.value = event.contentOffset.y;
-    console.log();
-    // console.log(event.contentOffset.y);
   });
 
 
@@ -134,9 +132,11 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
           style={[sliderCarsStyleAnimation]}
         >
           <CarImages>
+
             <ImageSlider
               imagesUrl={car.photos}
             />
+
           </CarImages>
         </Animated.View>
 
@@ -160,9 +160,9 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
             <Name>{car.name}</Name>
           </Description>
           <Rent>
-            <Period>{car.rent.period}</Period>
+            <Period>{car.period}</Period>
             <Price>R$ {
-              car.rent.price.toFixed(2)
+              car.price.toFixed(2)
             }</Price>
           </Rent>
         </Details>
@@ -170,7 +170,7 @@ export function CarDetails({ navigation }: { navigation: NavigationProp<any>; })
         <Accessories>
           {car.accessories.map(accessory => (
             <Accessory
-              key={accessory.type}
+              key={accessory.id}
               name={accessory.name}
               icon={getAccessoryIcon(accessory.type)} />)
           )

@@ -13,6 +13,9 @@ import {
 } from "@expo-google-fonts/archivo";
 
 import AppLoading from "expo-app-loading";
+
+import { AppProvider } from './src/hooks';
+
 import { Routes } from './src/routes';
 
 export default function App() {
@@ -29,6 +32,8 @@ export default function App() {
   }
 
   return (
-    <Routes />
+    <AppProvider>
+      <Routes />
+    </AppProvider>
   );
 }
