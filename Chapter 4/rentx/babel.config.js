@@ -5,13 +5,16 @@ module.exports = function (api) {
   api.cache(true);
   return {
     presets: [
+
       '@expo/next-adapter/babel',
+      // "module:metro-react-native-babel-preset"
       // 'babel-preset-expo'
     ],
     plugins: [
       'styled-components',
       // { 'ssr': true },
       'react-native-reanimated/plugin',
+      ["@babel/plugin-proposal-decorators", { "legacy": true }]
     ],
   };
 };
