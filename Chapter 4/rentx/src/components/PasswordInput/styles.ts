@@ -52,4 +52,4 @@ export const ChangePasswordVisibilityButton = styled(BorderlessButton)`
 
   background-color:${({ theme }) => theme.colors.background_secondary};
 
-`  as React.ElementType as new <BorderlessButtonProps>() => BorderlessButton;;;;;;
+`  as React.ElementType as new <BorderlessButtonProps>() => BorderlessButton;

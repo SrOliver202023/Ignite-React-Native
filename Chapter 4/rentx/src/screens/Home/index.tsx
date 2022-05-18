@@ -28,19 +28,29 @@ export function Home({ navigation }: { navigation: NavigationProp<any>; }) {
   }
 
   useEffect(() => {
+    let isMounted = true;
     async function fetchCars() {
       try {
         setLoading(true);
         const response = await api.get('/cars');
-        setCars(response.data as CarDTO[]);
+
+        if (isMounted) {
+          setCars(response.data as CarDTO[]);
+          // console.log('Hello!');
+        }
       } catch (error) {
         Alert.alert(`Error ao carregar lista de carros - Tente novamente mais tarde!`);
       }
       finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
     fetchCars();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
