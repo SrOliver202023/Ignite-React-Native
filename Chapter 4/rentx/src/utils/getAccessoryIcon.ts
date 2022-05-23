@@ -5,7 +5,7 @@ import GasolineSvg from "../assets/gasoline.svg";
 import EnergySvg from "../assets/energy.svg";
 import HybridSvg from "../assets/hybrid.svg";
 import ExchangeSvg from "../assets/exchange.svg";
-import PeopleSvg from "../assets/people.svg";
+import SeatsSvg from "../assets/seats.svg";
 import CarSvg from '../assets/car.svg';
 
 function getAccessoryIcon(type: string) {
@@ -35,7 +35,7 @@ function getAccessoryIcon(type: string) {
       return ExchangeSvg;
 
     case 'seats':
-      return PeopleSvg;
+      return SeatsSvg;
 
     default:
       return CarSvg;

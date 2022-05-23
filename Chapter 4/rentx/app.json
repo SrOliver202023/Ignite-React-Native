@@ -8,10 +8,18 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-"splash":{
-  "image":"./assets/splash.png",
-  "backgroundColor":"#1B1B1F",
-  "barStyle":"light-content"
-}
+  "splash":{
+    "image":"./assets/splash.png",
+    "backgroundColor":"#1B1B1F",
+    "barStyle":"light-content"
+  },
+ "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ]
   }
 }

@@ -35,10 +35,9 @@ export function ImageSlider({ imagesUrl }: ImagesProps) {
       <ImageIndexes>
         {imagesUrl.map((item, index) => (
           <ImageIndex
-            key={String(item.id)}
+            key={!!item.id ? String(item.id) : index}
             active={index === imageIndex} />
         ))
-
         }
       </ImageIndexes>
 
@@ -48,10 +47,11 @@ export function ImageSlider({ imagesUrl }: ImagesProps) {
         showsHorizontalScrollIndicator={false}
         horizontal
         data={imagesUrl}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
+        keyExtractor={item => String(item.id)}
+        renderItem={({ item, index }) => (
           <CarImageWrapper>
             <CarImage
+              key={!!item.id ? String(item.id) : index + Math.random()}
               source={{ uri: item.photo }}
               resizeMode='contain'
             />

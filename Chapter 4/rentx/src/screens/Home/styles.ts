@@ -4,8 +4,9 @@ import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { FlatList, FlatListProps, View, Text } from 'react-native';
 import styled from 'styled-components';
 import theme from '../../styles/theme';
-import { CarDTO } from '../../dtos/car';
-import { RectButton, RectButtonProps } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
+
+import { Car as ModelCar } from '../../database/model/Car';
 
 export const Container = styled(View)`
   flex:1;
@@ -37,7 +38,7 @@ export const CarsList = styled(FlatList).attrs({
     padding: 24
   },
   showVerticalScrollIndicator: false
-})`` as React.ElementType as new (item: FlatListProps<CarDTO>) => FlatList<CarDTO>;
+})`` as React.ElementType as new (item: FlatListProps<ModelCar>) => FlatList<ModelCar>;
 
 export const CarsEmpty = styled(View)`
   margin-top:${RFPercentage(38)}px;

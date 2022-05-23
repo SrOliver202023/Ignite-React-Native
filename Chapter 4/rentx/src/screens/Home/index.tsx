@@ -1,6 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, StatusBar, StyleSheet } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Alert, StatusBar } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useNetInfo } from '@react-native-community/netinfo';
+import { synchronize } from '@nozbe/watermelondb/sync';
+
+import { database } from '../../database';
+import { api } from '../../services/api';
+
+import Logo from '../../assets/logo.svg';
+import { CarDTO } from '../../dtos/car';
+
+import { Car } from '../../components/Car';
+import { Car as ModelCar } from '../../database/model/Car';
+import { LoadAnimation } from '../../components/LoadAnimation';
 
 import {
   Container,
@@ -8,55 +21,105 @@ import {
   HeaderContent,
   TotalCars,
   CarsList,
-  // MyCarsButton,
-
 } from './styles';
-import Logo from '../../assets/logo.svg';
 
-import { Car } from '../../components/Car';
-import { NavigationProp } from '@react-navigation/native';
+export function Home() {
+  const [cars, setCars] = useState<ModelCar[]>([]);
+  const [loading, setLoading] = useState(true);
 
-import { api } from '../../services/api';
-import { CarDTO } from '../../dtos/car';
-import { LoadAnimation } from '../../components/LoadAnimation';
+  const netInfo = useNetInfo();
+  const navigation = useNavigation();
+  const synchronizing = useRef(false);
 
-export function Home({ navigation }: { navigation: NavigationProp<any>; }) {
-  const [cars, setCars] = useState<CarDTO[]>([]);
-  const [loading, setLoading] = useState<Boolean>(false);
-  function handleCarDetails(car: CarDTO) {
-    navigation.navigate('CarDetails', { car });
+  function handleCarDetails(car: ModelCar) {
+    navigation.navigate('CarDetails', { carId: car.id });
+  }
+
+  async function offlineSynchronize() {
+    await synchronize({
+      database,
+      pullChanges: async ({ lastPulledAt }) => {
+        const response = await api
+          .get(`cars/sync/pull?lastPulledVersion=${lastPulledAt || 0}`);
+
+        const { changes, latestVersion } = response.data;
+
+        return { changes, timestamp: latestVersion };
+      },
+      pushChanges: async ({ changes }) => {
+        const user = changes.users;
+        if (user) {
+          await api.post('/users/sync', user);
+        }
+      },
+    });
+
+    await fetchCars();
+  }
+
+
+  async function fetchCars() {
+    try {
+      const carCollection = database.get<ModelCar>('cars');
+      const cars = await carCollection.query().fetch();
+
+      setCars(cars);
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     let isMounted = true;
-    async function fetchCars() {
-      try {
-        setLoading(true);
-        const response = await api.get('/cars');
 
-        if (isMounted) {
-          setCars(response.data as CarDTO[]);
-          // console.log('Hello!');
-        }
-      } catch (error) {
-        Alert.alert(`Error ao carregar lista de carros - Tente novamente mais tarde!`);
-      }
-      finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
+    if (isMounted) {
+      fetchCars();
     }
-    fetchCars();
+
     return () => {
       isMounted = false;
     };
   }, []);
 
+  useFocusEffect(useCallback(() => {
+    let isMounted = true;
+
+    const syncChanges = async () => {
+      if (netInfo.isConnected && !synchronizing.current) {
+        synchronizing.current = true;
+
+        try {
+          await offlineSynchronize();
+        }
+        catch (err) {
+          console.log(err);
+        }
+        finally {
+          synchronizing.current = false;
+        }
+      }
+    };
+
+    if (isMounted) {
+      try {
+        syncChanges();
+      } catch (error) {
+        Alert.alert('Error');
+      }
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [netInfo.isConnected]));
+
   return (
     <Container>
       <StatusBar
-        barStyle='light-content'
+        barStyle="light-content"
         backgroundColor="transparent"
         translucent
       />
@@ -66,38 +129,24 @@ export function Home({ navigation }: { navigation: NavigationProp<any>; }) {
             width={RFValue(108)}
             height={RFValue(12)}
           />
-
-          {!loading &&
+          {
+            !loading &&
             <TotalCars>
-              Total {cars.length === 1 ? `1 carro` : `${cars.length} carros`}
+              Total de {cars.length} carros
             </TotalCars>
           }
-
         </HeaderContent>
       </Header>
 
-      {
-        loading ? <LoadAnimation /> :
-          <CarsList
-            data={cars}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) =>
-              <Car
-                data={item}
-                onPress={() => handleCarDetails(item)}
-              />}
-          />
+      {loading ? <LoadAnimation /> :
+        <CarsList
+          data={cars}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) =>
+            <Car data={item} onPress={() => handleCarDetails(item)} />
+          }
+        />
       }
     </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    height: 60,
-    width: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
-});
