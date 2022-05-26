@@ -51,7 +51,7 @@ export function Scheduling({ navigation }: { navigation: NavigationProp<any>; })
       navigation.navigate('SchedulingDetails', {
         car,
         dates: Object.keys(markedDates),
-        rentalPeriod
+        period: rentalPeriod
       });
     }
   }

@@ -45,11 +45,14 @@ import {
 interface Params {
   car: CarDTO;
   dates: string[];
+  period: RentalPeriod;
 }
 
 interface RentalPeriod {
   start: string;
   end: string;
+  startFormatted?: string;
+  endFormatted?: string;
 }
 
 export function SchedulingDetails() {
@@ -59,7 +62,7 @@ export function SchedulingDetails() {
   const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
-  const { car, dates } = route.params as Params;
+  const { car, dates, period } = route.params as Params;
 
   const rentTotal = Number(dates.length * car.price);
 
@@ -69,8 +72,8 @@ export function SchedulingDetails() {
     await api.post('/rentals', {
       user_id: 1,
       car_id: car.id,
-      start_date: new Date(),
-      end_date: new Date(),
+      start_date: new Date(period.start),
+      end_date: new Date(period.end),
       total: rentTotal
     })
       .then(() => {
@@ -94,6 +97,12 @@ export function SchedulingDetails() {
     setRentalPeriod({
       start: format(getPlataformDate(new Date(dates[0])), 'dd/MM/yyyy'),
       end: format(getPlataformDate(new Date(dates[dates.length - 1])), 'dd/MM/yyyy'),
+    });
+    console.log('::::::::useEffect SchedulingDetails::::::::::');
+    console.log({
+      car,
+      dates,
+      period
     });
   }, []);
 

@@ -1,13 +1,20 @@
-import { NavigationProp } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StatusBar, FlatList } from 'react-native';
 import { useTheme } from 'styled-components';
+import { useNavigation } from '@react-navigation/core';
+import { AntDesign } from '@expo/vector-icons';
+import { parseISO, format } from 'date-fns';
+
+import { addHours, toDate } from "date-fns";
+
+
 import { BackButton } from '../../components/BackButton';
+import { LoadAnimation } from '../../components/LoadAnimation';
+
 import { Car } from '../../components/Car';
 import { CarDTO } from '../../dtos/car';
+import { Car as ModelCar } from '../../database/model/Car';
 import { api } from '../../services/api';
-
-import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import {
   Container,
@@ -18,17 +25,14 @@ import {
   Appointments,
   AppointmentsTitle,
   AppointmentsQuantity,
-  CarsList,
   CarWrapper,
   CarFooter,
   CarFooterTitle,
   CarFooterPeriod,
   CarFooterDate,
-
 } from './styles';
-import { LoadAnimation } from '../../components/LoadAnimation';
 
-export interface CarProps {
+interface CarProps {
   id: string;
   user_id: string;
   car: CarDTO;
@@ -36,23 +40,47 @@ export interface CarProps {
   endDate: string;
 }
 
-export function MyCars({ navigation }: { navigation: NavigationProp<any>; }) {
-  const [cars, setCars] = useState<CarProps[]>([]);
+interface DataProps {
+  id: string;
+  car: ModelCar;
+  start_date: string;
+  end_date: string;
+}
+
+export function MyCars() {
+  const [cars, setCars] = useState<DataProps[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const navigation = useNavigation();
   const theme = useTheme();
 
-  function handleBackToHome() {
+  function handleBack() {
     navigation.goBack();
   }
 
   useEffect(() => {
     async function fetchCars() {
       try {
-        const response = await api.get('/schedules_byuser?user_id=1');
-        setCars(response.data);
+        const response = await api.get('/rentals');
+        const dataFormatted = response.data.map((data: DataProps) => {
+          console.log({
+            id: data.id,
+            car: data.car,
+            start_date: format(addHours(new Date(data.start_date), 3), 'dd/MM/yyyy'),
+            end_date: format(addHours(new Date(data.end_date), 3), 'dd/MM/yyyy'),
+            start: data.start_date,
+            end: data.end_date,
+          });
+          return {
+            id: data.id,
+            car: data.car,
+            start_date: format(addHours(new Date(data.start_date), 3), 'dd/MM/yyyy'),
+            end_date: format(addHours(new Date(data.end_date), 3), 'dd/MM/yyyy'),
+          };
+        });
+        setCars(dataFormatted);
       } catch (error) {
-        Alert.alert(`Erro ao carregar carros alugados.`);
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -63,60 +91,60 @@ export function MyCars({ navigation }: { navigation: NavigationProp<any>; }) {
 
   return (
     <Container>
-      <StatusBar
-        barStyle='light-content'
-        backgroundColor='transparent'
-        translucent={true}
-      />
       <Header>
+        <StatusBar
+          barStyle="light-content"
+          translucent
+          backgroundColor="transparent"
+        />
         <BackButton
-          onPress={handleBackToHome}
+          onPress={handleBack}
           color={theme.colors.shape}
         />
+
         <Title>
-          Seus agendamentos,{"\n"}
-          estão aqui.
+          Escolha uma {'\n'}
+          data de início e {'\n'}
+          fim do aluguel
         </Title>
 
         <SubTitle>
           Conforto, segurança e praticidade.
         </SubTitle>
-
       </Header>
+      {
+        loading ? <LoadAnimation /> :
+          <Content>
+            <Appointments>
+              <AppointmentsTitle>Agendamentos feitos</AppointmentsTitle>
+              <AppointmentsQuantity>{cars.length}</AppointmentsQuantity>
+            </Appointments>
 
-      {loading ? <LoadAnimation /> :
-        <Content>
-          <Appointments>
-            <AppointmentsTitle>Agendamentos feitos</AppointmentsTitle>
-            <AppointmentsQuantity>{cars.length}</AppointmentsQuantity>
-          </Appointments>
-
-          <CarsList
-            data={cars}
-            keyExtractor={item => item.id}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <CarWrapper>
-                <Car data={item.car} />
-                <CarFooter>
-                  <CarFooterTitle>Periodo</CarFooterTitle>
-                  <CarFooterPeriod>
-                    <CarFooterDate>{item.startDate}</CarFooterDate>
-                    <AntDesign
-                      name='arrowright'
-                      size={20}
-                      color={theme.colors.title}
-                      style={{ marginHorizontal: 10 }}
-                    />
-                    <CarFooterDate>{item.endDate}</CarFooterDate>
-                  </CarFooterPeriod>
-                </CarFooter>
-              </CarWrapper>
-            )}
-          />
-        </Content>
+            <FlatList
+              data={cars}
+              keyExtractor={item => String(item.id)}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <CarWrapper>
+                  <Car data={item.car} />
+                  <CarFooter>
+                    <CarFooterTitle>Período</CarFooterTitle>
+                    <CarFooterPeriod>
+                      <CarFooterDate>{item.start_date}</CarFooterDate>
+                      <AntDesign
+                        name="arrowright"
+                        size={20}
+                        color={theme.colors.title}
+                        style={{ marginHorizontal: 10 }}
+                      />
+                      <CarFooterDate>{item.end_date}</CarFooterDate>
+                    </CarFooterPeriod>
+                  </CarFooter>
+                </CarWrapper>
+              )}
+            />
+          </Content>
       }
-
     </Container>
   );
 }
