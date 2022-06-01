@@ -7,7 +7,7 @@ import { Profile } from '../../screens/Profile';
 import { ReactTestProps } from '../../@types/test/test';
 
 
-describe('Screen Test : Profile', () => {
+describe('Screen Profile', () => {
   it('Should have placeholder correctly in user input name', () => {
     const { getByPlaceholderText } = render(<Profile />);
 
